@@ -13,11 +13,11 @@ public class Review {
     private int reviewId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userid", nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "bookId",nullable = false)
+    @JoinColumn(name = "bookid",nullable = false)
     private Book book;
 
     private String description;

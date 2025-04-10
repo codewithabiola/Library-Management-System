@@ -2,6 +2,8 @@ package com.example.UserLibrary.borrowrecord;
 
 import com.example.UserLibrary.Book.Book;
 import com.example.UserLibrary.Book.BookRepository;
+import com.example.UserLibrary.Security.BookNotAvailableException;
+import com.example.UserLibrary.Security.UserNotFoundException;
 import com.example.UserLibrary.users.UserRepository;
 import com.example.UserLibrary.users.Users;
 import org.springframework.stereotype.Service;
@@ -26,15 +28,15 @@ public class BorrowService {
     }
 
 
-    public void borrowBook(Integer userId, Integer bookId) {
+    public void borrowBook(Long userId, Integer bookId) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new BookNotAvailableException("Book not found"));
 
         if(book.getAvailableCopies()<=0){
-            throw new IllegalStateException("Copies not available");
+            throw new BookNotAvailableException("Copies not available");
         }
         if(borrowRepository.existsByUserAndBook(user,book)){
             throw new IllegalStateException("User has already borrowed book");
@@ -70,9 +72,9 @@ public class BorrowService {
     }
 
 
-    public List<BorrowRecord> getUserBorrowingHistory(Integer userId) {
+    public List<BorrowRecord> getUserBorrowingHistory(Long userId) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<BorrowRecord> records = borrowRepository.findByUser(user);
         if(records.isEmpty()){

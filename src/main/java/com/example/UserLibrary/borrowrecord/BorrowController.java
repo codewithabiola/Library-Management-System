@@ -16,7 +16,7 @@ public class BorrowController {
     }
 
     @PostMapping( "{userId}/{bookId}")
-    public void borrowBook(@PathVariable("userId") Integer userId, @PathVariable("bookId") Integer bookId) {
+    public void borrowBook(@PathVariable("userId") Long userId, @PathVariable("bookId") Integer bookId) {
         borrowService.borrowBook(userId,bookId);
     }
 
@@ -30,10 +30,12 @@ public class BorrowController {
         return borrowService.getBorrowedBooks();
     }
 
-    @GetMapping("{userId}")
-    public List<BorrowRecord> getBorrowingHistory(@PathVariable("userId") Integer userId) {
+    @GetMapping("/user/{userId}")
+    public List<BorrowRecord> getBorrowingHistory(
+            @PathVariable("userId") Long userId) {
         return borrowService.getUserBorrowingHistory(userId);
     }
+
 
     @GetMapping("/overdue")
     public List<BorrowRecord> getOverdueRecords() {
@@ -43,7 +45,7 @@ public class BorrowController {
     @PostMapping("/{borrowId}")
     public void requestExtension(
             @PathVariable("borrowId") Integer borrowId,
-            @RequestBody Integer extensionDays) {
+            @RequestParam Integer extensionDays) {
         borrowService.requestExtension(borrowId, extensionDays);
     }
 

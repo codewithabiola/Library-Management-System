@@ -1,19 +1,23 @@
 package com.example.UserLibrary.users;
 
 
+import com.example.UserLibrary.Book.Book;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "users")
+@RequestMapping(path = "/users")
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
@@ -28,21 +32,37 @@ public class UserController {
     }
 
     @GetMapping(path = "{userId}")
-    public Users getUserById(@PathVariable Integer userId) {
+    public Users getUserById(@PathVariable Long userId) {
        return userService.getUsersById(userId);
     }
 
-    @PutMapping(path = "{userId}")
+    @PutMapping(path = "/{userId}")
     public ResponseEntity<Users> updateUser(
-            @PathVariable Integer userId, @RequestBody Users user
+            @PathVariable Long userId, @RequestBody Users user
     ){
         userService.updateUser(userId, user);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping(path = "{userId}")
-    public void deleteUser(@PathVariable Integer userId) {
+    public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Users>> searchUserByName(@RequestParam String name) {
+        List<Users> users = userRepository.findByNameContainingIgnoreCase(name);
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(users);
+        }
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("{userId}/borrowed-books")
+    public List<Book> getBorrowedByUser(
+            @PathVariable Long userId
+    ){
+        return userService.getBorrowedByUser(userId);
     }
 
 

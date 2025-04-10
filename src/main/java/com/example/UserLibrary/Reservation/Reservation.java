@@ -3,7 +3,9 @@ package com.example.UserLibrary.Reservation;
 
 import com.example.UserLibrary.Book.Book;
 import com.example.UserLibrary.users.Users;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 
 import java.util.Date;
 
@@ -15,15 +17,22 @@ public class Reservation {
     private int reservationId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userid", nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "bookId", nullable = false)
+    @JoinColumn(name = "bookid", nullable = false)
     private Book book;
 
     private Date reservationDate;
     private String details;
+
+    @JsonIgnore
+    @Column(name = "encrypted_name")
+    private String encryptedName;
+
+    @Transient
+    private String decryptedName;
 
     public Reservation() {
     }
@@ -38,6 +47,24 @@ public class Reservation {
         this.book = book;
         this.reservationDate = reservationDate;
         this.details = details;
+    }
+
+
+
+    public String getDecryptedName() {
+        return decryptedName;
+    }
+
+    public void setDecryptedName(String decryptedName) {
+        this.decryptedName = decryptedName;
+    }
+
+    public String getEncryptedName() {
+        return encryptedName;
+    }
+
+    public void setEncryptedName(String encryptedName) {
+        this.encryptedName = encryptedName;
     }
 
     public int getReservationId() {

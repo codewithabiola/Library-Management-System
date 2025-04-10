@@ -8,18 +8,22 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "book")
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "bookid")
     private int bookId;
 
     private String title;
     private String author;
+    @Column(name = "published_year")
     private Date publishedYear;
+    @Column(name = "available_copies")
     private int availableCopies;
 
-    @OneToMany
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BorrowRecord> borrowRecords;
 
 
@@ -40,7 +44,7 @@ public class Book {
     }
 
     public void setBookId(int bookId) {
-        bookId = bookId;
+       this.bookId = bookId;
     }
 
     public String getTitle() {

@@ -1,5 +1,7 @@
 package com.example.UserLibrary.Book;
 
+import com.example.UserLibrary.Security.BookNotAvailableException;
+import com.example.UserLibrary.Security.UserNotFoundException;
 import com.example.UserLibrary.borrowrecord.BorrowRecord;
 import com.example.UserLibrary.borrowrecord.BorrowRepository;
 import com.example.UserLibrary.users.UserRepository;
@@ -37,7 +39,7 @@ public class BookService {
 
     public Book getBookdetails(Integer bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalStateException("Book not found"));
+                .orElseThrow(() -> new BookNotAvailableException("Book not found"));
 
         return book;
 
@@ -45,7 +47,7 @@ public class BookService {
 
     public Book updateBook(Integer bookId, Book updatedBook) {
         Book existingBook = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalStateException("Book not found"));
+                .orElseThrow(() -> new BookNotAvailableException("Book not found"));
 
         if(updatedBook.getTitle() != null) {
             existingBook.setTitle(updatedBook.getTitle());
@@ -61,10 +63,11 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
+
     public void deleteBook(Integer bookId) {
         boolean exists = bookRepository.existsById(bookId);
         if(!exists) {
-            throw new IllegalStateException("Book not found");
+            throw new BookNotAvailableException("Book not found");
         }
        bookRepository.deleteById(bookId);
     }
@@ -72,14 +75,14 @@ public class BookService {
     public List<Book> availableCopies() {
         List<Book> books = bookRepository.findByAvailableCopiesGreaterThan(0);
         if(books.isEmpty()) {
-            throw new IllegalStateException("No available copies found");
+            throw new BookNotAvailableException("No available copies found");
         }
         return books;
     }
 
-    public List<BorrowRecord> borrowedBooks(Integer userId) {
+    public List<BorrowRecord> borrowedBooks(Long userId) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<BorrowRecord> borrowRecords = borrowRepository.findByUser(user);
         List<Book> books = new ArrayList<>();

@@ -16,9 +16,9 @@ public class ReviewController {
     }
 
     @PostMapping("/{userId}/{bookId}")
-    public void addReview(@PathVariable Integer userId,
+    public void addReview(@PathVariable Long userId,
                           @PathVariable Integer bookId,
-                          @RequestBody String description) {
+                          @RequestParam String description) {
         reviewService.addReview(userId,bookId,description);
     }
 
@@ -29,7 +29,7 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Review> getUserReviews(@PathVariable Integer userId) {
+    public List<Review> getUserReviews(@PathVariable Long userId) {
         return reviewService.getUserReviews(userId);
     }
 

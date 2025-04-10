@@ -8,18 +8,21 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "borrowrecord")
 public class BorrowRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "borrowrecord_seq")
+    @SequenceGenerator(name = "borrowrecord_seq", sequenceName = "borrowrecord_seq", allocationSize = 1)
+    @Column(name = "borrowid")
     private int borrowId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userid", nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "bookId",nullable = false)
+    @JoinColumn(name = "bookid",nullable = false)
     private Book book;
 
     private Date borrowDate;

@@ -2,6 +2,8 @@ package com.example.UserLibrary.review;
 
 import com.example.UserLibrary.Book.Book;
 import com.example.UserLibrary.Book.BookRepository;
+import com.example.UserLibrary.Security.BookNotAvailableException;
+import com.example.UserLibrary.Security.UserNotFoundException;
 import com.example.UserLibrary.users.UserRepository;
 import com.example.UserLibrary.users.Users;
 import org.springframework.stereotype.Service;
@@ -21,21 +23,20 @@ public class ReviewService {
         this.bookRepository = bookRepository;
     }
 
-    public void addReview(Integer userId, Integer bookId,String description) {
+    public void addReview(Long userId, Integer bookId,String description) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new BookNotAvailableException("Book not found"));
 
         Review review = new Review(user, book, description);
         reviewRepository.save(review);
-
     }
 
     public List<Review> getBookReviews(Integer bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new BookNotAvailableException("Book not found"));
 
         List<Review> reviews = reviewRepository.findByBook(book);
         if (reviews.isEmpty()) {
@@ -44,9 +45,9 @@ public class ReviewService {
         return reviews;
     }
 
-    public List<Review> getUserReviews(Integer userId) {
+    public List<Review> getUserReviews(Long userId) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<Review> reviews = reviewRepository.findByUser(user);
         if (reviews.isEmpty()) {
